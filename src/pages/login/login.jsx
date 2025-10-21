@@ -3,6 +3,7 @@ import { auth } from "../../firebase"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { useEffect, useState } from "react"
 import Sair from "../../components/logout/logout"
+import { signOut } from 'firebase/auth'
 
 const Login = () => {
     const [user, setUser] = useState(null)
@@ -27,24 +28,30 @@ const Login = () => {
         <Container>
             <Card>
 
+            { user ? 
+
                 <div>
+                    <button className="first-button">Continue como {user.displayName}</button> 
+                    <button onClick={() => signOut(auth)} className="second-button">Criar nova conta</button>    
+                </div>
+
+            :
+
+            <div>
                     <button className="first-button">Já tenho uma conta</button> 
-                    <button className="second-button">Criar nova conta</button>    
+                    <button className="second-button">Criar nova conta</button>
+
 
                     <p>Acessar com</p>
 
-                    {
-                        user ? <Sair user={user}/> :
-                        
-                        <div className="container-button">
+                    <div className="container-button">
                             <button className="g" onClick={loginGoogle}>G</button>
                             <button className="f">F</button>
-                        </div>
+                    </div>    
 
-                    }
+            </div>
 
-
-                </div>
+               }
             </Card>
         </Container>
     )
