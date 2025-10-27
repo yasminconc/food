@@ -1,12 +1,24 @@
+import { Container } from "./styles"
+
 
 const Signup = () => {
     return (
-        <div>
-          Signup
-        </div>
+        <Container>
+         <div className="container-input">
+            <input 
+              type="text"
+              placeholder="E-mail" 
+            />
+            <input 
+              type="text"
+              placeholder="Senha" 
+            />
+         </div>
+        </Container>
     )
 
 }
+
 export default Signup
 
 

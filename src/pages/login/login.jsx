@@ -32,7 +32,7 @@ const Login = () => {
 
                 <div>
                     <button className="first-button">Continue como {user.displayName}</button> 
-                    <button onClick={() => signOut(auth)} className="second-button">Criar nova conta</button>    
+                    <button onClick={() => signOut(auth)} className="second-button">Acessar outra conta</button>    
                 </div>
 
             :
