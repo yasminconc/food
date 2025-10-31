@@ -4,11 +4,12 @@ import styled from 'styled-components';
 export const Container = styled.div `
     display: flex;
     flex-direction: column;
-    
     align-items: center;
 
     height: 100vh;
     width: 100%;
+
+    position: relative;
 
     h1 {
         margin-top: 4rem;
@@ -27,6 +28,18 @@ export const Container = styled.div `
         color:  ${({ theme }) => theme.colors.red};
     }
 
+    .form {
+      /* Faz o form ocupar 100% da largura, "quebrando" o align-items-center do Container */
+      width: 100%;
+
+      /* Faz o form ser o NOVO container flex para os inputs e o botão */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      padding-bottom: 6rem;
+    }
+
     .container-input {
         display: flex;
         flex-direction: column;
@@ -35,7 +48,12 @@ export const Container = styled.div `
     }
 
     button {
-        margin-top: 30rem;
+        margin-top: auto;
+
+        position: absolute;
+        bottom: 0;
+        left: 0;
+
         height: 5rem;
         width: 100%;
 
@@ -49,46 +67,3 @@ export const Container = styled.div `
     }
 `
 
-
-// 1. O container principal
-export const InputWrapper = styled.div`
-  position: relative;
-  margin-top: 1.5rem; /* Dá espaço para a etiqueta flutuante */
-`;
-
-// 2. A etiqueta flutuante
- export const StyledLabel = styled.label`
-  position: absolute;
-  top: 2px;
-  left: 10px;
-  
-  /* O truque para centralizar na linha da borda */
-  transform: translateY(-50%); 
-  
-  /* Cor de fundo para "esconder" a linha do input que passa por trás */
-  background-color: #fff; /* Assuma que o fundo da página é branco */
-  
-  padding: 0 4px; /* O "corte" na borda */
-  font-size: 13px;
-  
-`;
-
-// 3. O input
- export const StyledInput = styled.input`
-  border: 2px solid  ${({ theme }) => theme.colors.gray900};
-  border-radius: 4px;
-  padding: 16px 12px; /* Padding maior para o texto não ficar atrás da etiqueta */
-  height: 4rem;
-  width: 23rem;
-  
-  box-sizing: border-box;
-
-  &::placeholder {
-    color:  ${({ theme }) => theme.colors.gray800};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: #000; /* Muda a cor da borda ao focar */
-  }
-`;
