@@ -5,6 +5,11 @@ import styled from "styled-components"
 export const InputWrapper = styled.div`
   position: relative;
   margin-top: 1.5rem; /* Dá espaço para a etiqueta flutuante */
+
+  p {
+    margin-top: 0.5rem;
+    color: ${({ theme }) => theme.colors.red};
+  }
 `;
 
 // 2. A etiqueta flutuante

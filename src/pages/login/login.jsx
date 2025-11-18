@@ -1,79 +1,111 @@
-import { Card, Container } from "./styles"
-import { auth } from "../../firebase"
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-import { useEffect, useState } from "react"
-import Sair from "../../components/logout/logout"
-import { signOut } from 'firebase/auth'
+import { Container } from './style'
+import { IoIosArrowBack } from 'react-icons/io'
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
+
+import { auth } from '../../firebase'
+import { useNavigate } from 'react-router'
+import { useEffect, useState } from 'react'
+
+import { useLoginForm } from '../../hooks/useForm'
+import Input from '../../components/input/input'
+import { BiLoaderCircle } from "react-icons/bi";
 
 const Login = () => {
-    const [user, setUser] = useState(null)
+	const [signInWithEmailAndPassword, user, loading, firebaseError] = useSignInWithEmailAndPassword(auth)
+	const navigate = useNavigate()
 
-    useEffect(() => {
-        auth.onAuthStateChanged(setUser)
-    },[])
+	// 2. Crie um estado para sua mensagem de erro personalizada
+	const [authError, setAuthError] = useState('')
 
-    const loginGoogle = async () => {
-        const provider = new GoogleAuthProvider()
+	const { register, handleSubmit, errors, isSubmitting } = useLoginForm()
 
-        try {
-            const result = await signInWithPopup(auth, provider)
+	const handleSignIn = async (data) => {
+		// 3. Limpe erros antigos antes de tentar novamente
+		setAuthError('')
 
-            console.log("Usuário logado:", result.user);
+		try {
+			await signInWithEmailAndPassword(data.email, data.password)
+		} catch (err) {
+			console.error(err)
+		}
+	}
 
-        }catch(error){
-            console.log("Erro ao logar", error);
-        }
-    }
-    return (
-        <Container>
-            <Card>
+	// Efeito para redirecionar
+	useEffect(() => {
+		if (user) {
+			navigate('/')
+		}
+	}, [user, navigate])
 
-            { user ? 
+	// 4. NOVO EFEITO: "Traduzir" o erro do Firebase
+	useEffect(() => {
+		if (firebaseError) {
+			// Verificamos os códigos de erro comuns do Firebase para login
+			switch (firebaseError.code) {
+				case 'auth/user-not-found':
+				case 'auth/wrong-password':
+				case 'auth/invalid-credential': // Erro genérico do Firebase para "email ou senha errados"
+					setAuthError('E-mail ou senha inválidos.')
+					break
+				default:
+					// Qualquer outro erro (ex: 'auth/network-request-failed')
+					setAuthError('Ocorreu um erro. Tente novamente.')
+			}
+		}
+	}, [firebaseError]) // Este efeito roda sempre que 'firebaseError' mudar
 
-                <div>
-                    <button className="first-button">Continue como {user.displayName}</button> 
-                    <button onClick={() => signOut(auth)} className="second-button">Acessar outra conta</button>    
-                </div>
+	const handleBack = () => {
+		navigate(-1)
+	}
 
-            :
+	const clearAuthError = () => {
+		if (authError) {
+			setAuthError('')
+		}
+	}
 
-            <div>
-                    <button className="first-button">Já tenho uma conta</button> 
-                    <button className="second-button">Criar nova conta</button>
+	const isLoading = loading || isSubmitting
 
+	return (
+		<Container>
+			<div className='icon-div'>
+				<IoIosArrowBack size={32} onClick={handleBack}/>
+			</div>
 
-                    <p>Acessar com</p>
+			<h1>Qual o seu e-mail e senha?</h1>
 
-                    <div className="container-button">
-                            <button className="g" onClick={loginGoogle}>G</button>
-                            <button className="f">F</button>
-                    </div>    
+			<form onSubmit={handleSubmit(handleSignIn)}>
+				<div className='container-input'>
+					<Input
+						label='E-mail'
+						type='email'
+						placeholder='E-mail'
+						// Mostra o erro do Zod (ex: "Campo vazio")
+						error={errors.email}
+						{...register('email')}
+						onKeyDown={clearAuthError}
+					/>
 
-            </div>
+					<Input
+						label='Senha'
+						type='password'
+						placeholder='Senha'
+						// Mostra o erro do Zod (ex: "Campo vazio")
+						error={errors.password}
+						{...register('password')}
+						onKeyDown={clearAuthError}
+					/>
+				</div>
 
-               }
-            </Card>
-        </Container>
-    )
+				
+				{authError && <p className='firebase-error'>{authError}</p>}
+
+				<button type='submit' disabled={isLoading}>
+					{isLoading ? <BiLoaderCircle size={26}/> : 'Continuar'}
+				</button>
+			</form>
+		</Container>
+	)
 }
 
 export default Login
-
-
-// // Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-// // TODO: Add SDKs for Firebase products that you want to use
-// // https://firebase.google.com/docs/web/setup#available-libraries
-
-// // Your web app's Firebase configuration
-// const firebaseConfig = {
-//   apiKey: "AIzaSyAgGMnBJdV8gGti93MrI1FLpmdwLxYyVbA",
-//   authDomain: "authreact-de7e7.firebaseapp.com",
-//   projectId: "authreact-de7e7",
-//   storageBucket: "authreact-de7e7.firebasestorage.app",
-//   messagingSenderId: "870623588011",
-//   appId: "1:870623588011:web:9297e9252f3a83e2b251ee"
-// };
-
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
